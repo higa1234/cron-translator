@@ -19,4 +19,5 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CRON_TRANSLATOR }}
           projectId: cron-translator
-          entryPoint: "."
+        env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
