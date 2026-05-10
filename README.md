@@ -1,73 +1,151 @@
-# React + TypeScript + Vite
+# cron-translator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+cron-translator は、標準的な5フィールド Cron 式をフィールド別に分解し、それぞれの意味を日本語で確認できる Web アプリです。
 
-Currently, two official plugins are available:
+Cron 式全体を自然文に変換するのではなく、`分`、`時`、`日`、`月`、`曜日` の各フィールドが何を指定しているかを個別に表示します。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 概要
 
-## React Compiler
+Cron 式に慣れていない開発者や、ジョブスケジュールの設定内容を確認したい人向けのツールです。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+入力された Cron 式をルールベースで解析し、対応している記法についてはフィールドごとに読み解ける形で表示します。AI API は使用していません。
 
-## Expanding the ESLint configuration
+## 主な機能
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 5フィールド Cron 式の入力
+- `分`、`時`、`日`、`月`、`曜日` への分解表示
+- 各フィールドの日本語説明表示
+- 不正な Cron 式のエラー表示
+- 5フィールド Cron 式の貼り付けによる各入力欄への自動分配
+- 入力中の Cron 式のコピー
+- ライトテーマ / ダークテーマ切り替え
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 対応している Cron フィールド記法
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| 記法 | 例 | 意味 |
+| --- | --- | --- |
+| `*` | `*` | すべての値 |
+| 数値 | `5` | 指定した値 |
+| カンマ区切り | `1,15,30` | 複数の指定値 |
+| 範囲指定 | `9-17` | 指定範囲の値 |
+| 間隔指定 | `*/5` | 全範囲で指定間隔ごと |
+| 範囲つき間隔指定 | `9-17/2` | 指定範囲内で指定間隔ごと |
+| 混在指定 | `1,5-10,*/15,20-30/2` | 複数ルールの組み合わせ |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 対応する Cron 式
+
+標準的な5フィールド Cron 式を扱います。
+
+```text
+分 時 日 月 曜日
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+| 位置 | フィールド | 値の範囲 | 例 |
+| --- | --- | --- | --- |
+| 1 | 分 | `0-59` | `0`, `30`, `*`, `*/5` |
+| 2 | 時 | `0-23` | `9`, `12`, `*`, `9-17` |
+| 3 | 日 | `1-31` | `1`, `15`, `*`, `1,15` |
+| 4 | 月 | `1-12` | `1`, `12`, `*`, `1-6` |
+| 5 | 曜日 | `0-7` | `0`, `1`, `*`, `1-5` |
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+曜日は `0` と `7` を日曜日として扱います。
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 技術スタック
+
+- React
+- TypeScript
+- Vite
+- Chakra UI
+- Vitest
+- Testing Library
+
+## セットアップ
+
+依存関係をインストールします。
+
+```bash
+npm install
+```
+
+開発サーバーを起動します。
+
+```bash
+npm run dev
+```
+
+## 利用可能なスクリプト
+
+```bash
+npm run dev
+```
+
+開発サーバーを起動します。
+
+```bash
+npm run build
+```
+
+TypeScript のビルドと Vite の本番ビルドを実行します。
+
+```bash
+npm run lint
+```
+
+ESLint を実行します。
+
+```bash
+npm run test
+```
+
+Vitest を watch モードで実行します。
+
+```bash
+npm run test:ci
+```
+
+Vitest を CI 向けに1回実行します。
+
+```bash
+npm run preview
+```
+
+本番ビルドをローカルでプレビューします。
+
+## ディレクトリ構成
+
+```text
+src/
+  App.tsx
+  main.tsx
+  components/
+    common/
+      アプリ全体で使う共通UIコンポーネント
+  features/
+    cron/
+      components/
+        Cron機能専用のUIコンポーネント
+      lib/
+        Cron解析・説明生成などのロジック
+      types/
+        Cron関連の型定義
+      __tests__/
+        Cron関連のテスト
+```
+
+## 開発方針
+
+- Cron 解析はルールベースで行う
+- AI API は使用しない
+- Cron 式全体を1つの文章に要約することを主目的にしない
+- 各フィールドの意味を確認できる表示を優先する
+- Cron 関連の UI、ロジック、型、テストは `src/features/cron/` 配下に集約する
+
+## 品質確認
+
+変更後は以下を実行して確認します。
+
+```bash
+npm run lint
+npm run test:ci
+npm run build
 ```
